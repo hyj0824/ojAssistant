@@ -2,12 +2,14 @@ import requests
 import os
 import re
 import json
-from datetime import datetime
-from pickle import dump, load
+from urllib.parse import urlparse
+
+from config import COOKIES_FILE
 
 class OJRequester:
     def __init__(self):
         self.base_url = "https://oj.cse.sustech.edu.cn"
+        self.base_domain = urlparse(self.base_url).netloc
         self.session = requests.Session()
 
         # 设置通用请求头
@@ -21,6 +23,7 @@ class OJRequester:
             'Priority': 'u=1, i'
         })
         self.csrf_token = None
+        self.cookies_file = COOKIES_FILE
 
     def cas_login(self, username, password):
         print("[\x1b[0;36m!\x1b[0m] 测试OAuth授权URL...")
@@ -141,46 +144,61 @@ class OJRequester:
             print("[\x1b[0;31mx\x1b[0m] 登录状态不完整")
             return False
 
-    def save_cookies(self, filename="oj_cookies.pkl"):
-        """保存cookies到文件"""
-        # Store cookies and additional info like CSRF token and timestamp
-        data = {
-            'cookies': self.session.cookies,
-            'csrf_token': self.csrf_token,
-            'timestamp': datetime.now().timestamp()
-        }
+    def save_cookies(self, filename=None):
+        """保存必要的cookies到文本文件"""
+        filepath = filename or self.cookies_file
+        jcoder_id = self.session.cookies.get('JCoderID')
+        csrf_token = self.session.cookies.get('csrftoken') or self.csrf_token
 
-        try:
-            with open(filename, 'wb') as f:
-                dump(data, f)
-            print(f"[\x1b[0;32m+\x1b[0m] Cookies保存到 {filename}")
-            return True
-        except Exception as e:
-            print(f"[\x1b[0;31mx\x1b[0m] Cookies保存失败·: {e}")
+        if not jcoder_id or not csrf_token:
+            print("[\x1b[0;31mx\x1b[0m] 未获取到完整的Cookies，无法保存")
             return False
 
-    def load_cookies(self, filename="oj_cookies.pkl"):
-        """从文件加载cookies"""
-        if not os.path.exists(filename):
+        directory = os.path.dirname(filepath)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+
+        try:
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(f"JCoderID={jcoder_id}\n")
+                f.write(f"csrftoken={csrf_token}\n")
+            print(f"[\x1b[0;32m+\x1b[0m] Cookies保存到 {filepath}")
+            return True
+        except Exception as e:
+            print(f"[\x1b[0;31mx\x1b[0m] Cookies保存失败: {e}")
+            return False
+
+    def load_cookies(self, filename=None):
+        """从文本文件加载必要的cookies"""
+        filepath = filename or self.cookies_file
+
+        if not os.path.exists(filepath):
             print(f"[\x1b[0;33m!\x1b[0m] 没有找到保存的Cookies文件")
             return False
 
         try:
-            with open(filename, 'rb') as f:
-                data = load(f)
+            stored = {}
+            with open(filepath, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith('#') or '=' not in line:
+                        continue
+                    key, value = line.split('=', 1)
+                    stored[key.strip()] = value.strip()
 
-            # Check if cookies are too old
-            timestamp = data.get('timestamp', 0)
-            if datetime.now().timestamp() - timestamp > 7200:
+            jcoder_id = stored.get('JCoderID')
+            csrf_token = stored.get('csrftoken')
+
+            if not jcoder_id or not csrf_token:
+                print("[\x1b[0;31mx\x1b[0m] Cookies文件内容不完整")
                 return False
 
-            # Restore session cookies
-            self.session.cookies = data['cookies']
-            self.csrf_token = data.get('csrf_token')
-
+            self.session.cookies.set('JCoderID', jcoder_id, domain=self.base_domain, path='/')
+            self.session.cookies.set('csrftoken', csrf_token, domain=self.base_domain, path='/')
+            self.csrf_token = csrf_token
             return True
         except Exception as e:
-            print(f"[\x1b[0;31mx\x1b[0m] 保存Cookies时出错: {e}")
+            print(f"[\x1b[0;31mx\x1b[0m] 读取Cookies时出错: {e}")
             return False
 
     def check_cookies_status(self):

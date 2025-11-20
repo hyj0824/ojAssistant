@@ -1,5 +1,6 @@
 /.idea
 oj_cookies.pkl
+oj_cookies.txt
 /.run
 __pycache__/
 utils/__pycache__/

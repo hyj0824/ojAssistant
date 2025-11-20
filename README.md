@@ -44,7 +44,8 @@ powershell -Command "iex ((New-Object System.Net.WebClient).DownloadString('http
 
 然后在Intellij中新建的终端中只需输入`oja`即可启动脚本
 
->更多相关设置配置见`config.py`
+> 为了避免浏览器掉登录，你可以把浏览器中的Cookies复制到`oj_cookies.txt`中
+> 更多相关设置配置见`config.py`
 > Intellij中Junit依赖安装参考<https://www.jetbrains.com/help/idea/junit.html#intellij>中的`add dependencies`部分
 
 
@@ -65,7 +66,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 | 设置选项                 | 释义                                   |
 |----------------------| -------------------------------------- |
-| COOKIES_FILE         | 临时登陆凭证存放路径                   |
+| COOKIES_FILE         | 临时登陆凭证存放路径（默认为项目根目录下的oj_cookies.txt） |
 | WORK_DIRECTORY       | 你的Java作业如Main.java所在路径        |
 | AUTO_SELECT_COURSE   | 是否自动进入课程界面                   |
 | AUTO_SELECT_HOMEWORK | 是否自动进入作业界面                   |
