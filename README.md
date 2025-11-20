@@ -19,7 +19,8 @@ ojAssistant/
 ├── utils/
 │   ├── __init__.py
 │   ├── formatters.py       # 格式化相关函数
-│   └── file_handlers.py    # 文件操作函数
+│   ├── file_handlers.py    # 文件操作函数
+│   └── workdir.py          # 工作目录管理
 └── config.py               # 配置信息
 ```
 
@@ -42,7 +43,7 @@ ojAssistant/
 powershell -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/giraffishh/ojAssistant/main/setup.ps1'))"
 ```
 
-然后在Intellij中新建的终端中只需输入`oja`即可启动脚本
+然后在Intellij中新建的终端中只需输入`oja`即可启动脚本，默认以终端当前目录作为作业代码目录。使用 `oja <dir>` 可指定作业代码目录。
 
 > 为了避免浏览器掉登录，你可以把浏览器中的Cookies复制到`oj_cookies.txt`中
 > 更多相关设置配置见`config.py`
@@ -67,7 +68,6 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | 设置选项                 | 释义                                   |
 |----------------------| -------------------------------------- |
 | COOKIES_FILE         | 临时登陆凭证存放路径（默认为项目根目录下的oj_cookies.txt） |
-| WORK_DIRECTORY       | 你的Java作业如Main.java所在路径        |
 | AUTO_SELECT_COURSE   | 是否自动进入课程界面                   |
 | AUTO_SELECT_HOMEWORK | 是否自动进入作业界面                   |
 | MAX_RECORDS_TO_SHOW  | 在作业详情页显示的最大历史提交记录数量 |

@@ -3,9 +3,6 @@ import sys
 import time
 import hashlib
 
-from config import WORK_DIRECTORY
-
-
 def get_file_hash(content=None, file_path=None):
     """
     计算文件或内容的SHA-256哈希值
@@ -155,13 +152,6 @@ def get_java_file_paths(work_dir):
 
 def handle_submission(requester, problem, course_id, homework_id):
     """处理Java文件的选择和提交。支持多个Java文件。"""
-    # 导入配置
-    try:
-        sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-        from config import WORK_DIRECTORY
-    except ImportError:
-        print("[\x1b[0;31mx\x1b[0m] 未找到config.py文件，使用当前目录作为工作目录")
-        WORK_DIRECTORY = "."
 
     # 确保course_id和homework_id是字符串，而不是字典
     if isinstance(course_id, dict) and 'id' in course_id:
@@ -173,7 +163,8 @@ def handle_submission(requester, problem, course_id, homework_id):
     print(f"提交题目解答: {problem['title'] if 'title' in problem else problem['problemName']}")
     print(f"{'-' * 40}")
 
-    selected_file_paths = get_java_file_paths(WORK_DIRECTORY)
+    import utils.workdir
+    selected_file_paths = get_java_file_paths(utils.workdir.get())
     if not selected_file_paths:
         print("[\x1b[0;33m!\x1b[0m] 未选择文件，提交取消")
         return False

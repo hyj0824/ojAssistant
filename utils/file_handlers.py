@@ -1,5 +1,3 @@
-from config import WORK_DIRECTORY
-
 def save_problem_to_file(problem, course_id, homework_id):
     """将题目内容保存为文件"""
     problem_id = problem.get('problemId', 'unknown')
@@ -107,7 +105,8 @@ def save_problem_to_file(problem, course_id, homework_id):
     # 保存文件 - 直接在当前目录
     try:
         # 不创建子目录，直接在当前目录保存
-        file_path = WORK_DIRECTORY + '\\' + file_name
+        import os,utils.workdir
+        file_path = os.path.join(utils.workdir.get(), file_name)
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(content)
 

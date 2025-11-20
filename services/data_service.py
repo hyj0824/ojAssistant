@@ -161,8 +161,8 @@ def download_unit_test_file(course_code, problem_id, homework_id, problem_name):
 
 
     # 保存路径
-    from config import WORK_DIRECTORY
-    save_path = os.path.join(WORK_DIRECTORY, file_name)
+    import utils.workdir
+    save_path = os.path.join(utils.workdir.get(), file_name)
 
     # 下载文件
     try:

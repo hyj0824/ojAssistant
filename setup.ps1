@@ -217,11 +217,7 @@ function Install-OjAssistant {
                     $value = $ExistingConfig[$key]
 
                     # Format according to the key type
-                    if ($key -eq "WORK_DIRECTORY") {
-                        # Windows path needs special handling
-                        $updatedConfig += "$key = r`"$value`""
-                    }
-                    elseif ($value -eq "True" -or $value -eq "False" -or $value -match "^\d+$") {
+                    if ($value -eq "True" -or $value -eq "False" -or $value -match "^\d+$") {
                         # Boolean or number values
                         $updatedConfig += "$key = $value"
                     }
@@ -302,7 +298,6 @@ Write-Host "Packages installed successfully" -ForegroundColor Green
 $currentConfig = Read-ConfigFile -configPath $configPath
 $needUsername = $false
 $needPassword = $false
-$needWorkDir = $false
 
 # Check essential values
 foreach ($key in $currentConfig.Keys) {
@@ -313,9 +308,6 @@ foreach ($key in $currentConfig.Keys) {
     }
     elseif ($key -eq "PASSWORD" -and ($value -eq "REMOVE" -or $value -eq "REMOVED" -or $value -eq "")) {
         $needPassword = $true
-    }
-    elseif ($key -eq "WORK_DIRECTORY" -and $value -eq "") {
-        $needWorkDir = $true
     }
 }
 
@@ -336,24 +328,6 @@ if ($needUsername -or $needPassword -or $needWorkDir) {
             $password = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
             [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
             $updatedConfigLines += "PASSWORD = '$password'"
-        }
-        elseif ($needWorkDir -and $line -match '^\s*WORK_DIRECTORY\s*=') {
-            $workDir = Read-Host "Enter the directory where your Java assignments are stored"
-
-            # Validate work directory
-            if (-not (Test-Path $workDir)) {
-                $createDir = Read-Host "Directory does not exist. Create it? (y/n)"
-                if ($createDir -eq "y") {
-                    New-Item -ItemType Directory -Path $workDir -Force | Out-Null
-                    Write-Host "Directory created at $workDir" -ForegroundColor Green
-                }
-                else {
-                    Write-Host "Please provide a valid directory path and run the script again." -ForegroundColor Yellow
-                    exit 0
-                }
-            }
-
-            $updatedConfigLines += "WORK_DIRECTORY = r`"$workDir`""
         }
         else {
             $updatedConfigLines += $line
@@ -389,7 +363,7 @@ if ($null -eq $profileContent -or -not $profileContent.Contains("function oja"))
 
 # ojAssistant function
 function oja {
-    python "$mainPath"
+    python "$mainPath" `$args
 }
 "@
     Add-Content -Path $PROFILE -Value $ojaFunction

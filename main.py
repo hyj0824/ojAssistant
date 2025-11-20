@@ -1,3 +1,4 @@
+import utils.workdir
 from services import OJRequester, handle_login, fetch_and_process_homeworks, fetch_and_process_problems
 from ui import display_courses, display_homeworks, select_course, select_homework, interact_with_problems
 from config import AUTO_SELECT_COURSE
@@ -8,6 +9,13 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # 主函数
 def main():
+    # 如果有参数，替换工作目录
+    import sys,os
+    if len(sys.argv) > 1:
+        utils.workdir.set(os.path.abspath(sys.argv[1]))
+
+    print("当前工作目录:", utils.workdir.get())
+
     # 创建一个OJ请求实例
     requester = OJRequester()
 
