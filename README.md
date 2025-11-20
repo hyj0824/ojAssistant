@@ -1,5 +1,5 @@
 # OjAssistant
-🍀SustechJcoder平台助手 v1.2.1
+🍀Sustech CS109 JavaA 计算机程序设计基础 Jcoder平台助手 v1.2.1
 
 ### 📌 项目结构
 ```
