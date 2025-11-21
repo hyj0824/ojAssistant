@@ -15,7 +15,7 @@ ojAssistant/
 │   ├── display.py          # 显示功能
 │   ├── submission.py       # 上传作业功能
 │   └── interaction.py      # 用户交互功能
-
+|
 ├── utils/
 │   ├── __init__.py
 │   ├── formatters.py       # 格式化相关函数
@@ -45,10 +45,11 @@ powershell -Command "iex ((New-Object System.Net.WebClient).DownloadString('http
 
 然后在Intellij中新建的终端中只需输入`oja`即可启动脚本，默认以终端当前目录作为作业代码目录。使用 `oja <dir>` 可指定作业代码目录。
 
-> 为了避免浏览器掉登录，你可以把浏览器中的Cookies复制到`oj_cookies.txt`中
-> 更多相关设置配置见`config.py`
-> Intellij中Junit依赖安装参考<https://www.jetbrains.com/help/idea/junit.html#intellij>中的`add dependencies`部分
+为了避免浏览器掉登录，你可以把浏览器中的Cookies复制到`oj_cookies.txt`中
 
+更多相关设置配置见`config.py`。如果你需要自定义默认代码目录，请修改 `utils/workdir.py`。
+
+> Intellij中Junit依赖安装参考<https://www.jetbrains.com/help/idea/junit.html#intellij>中的`add dependencies`部分
 
 **问题排除**
 
